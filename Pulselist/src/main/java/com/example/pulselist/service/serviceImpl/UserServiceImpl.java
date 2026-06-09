@@ -1,43 +1,48 @@
-package com.example.pulselist.service;
+package com.example.pulselist.service.serviceImpl;
 
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.repositories.UserRepository;
+import com.example.pulselist.exceptions.InvalidUserIDException;
+import com.example.pulselist.service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private final UserRepository userRepo;
 
-    public UserService(UserRepository userRepo) {
+    public UserServiceImpl(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
 
     // Returns list of users
+    @Override
     public List<User> getUsers(){
         return userRepo.findAll();
     }
 
     // Returns user by id
+    @Override
     public User getUserById(Long id) throws InvalidUserIDException {
         return userRepo.findById(id)
-                .orElseThrow(() -> new InvalidUserIDException("Invalid user ID, no user could be found"));
+                .orElseThrow(() -> new InvalidUserIDException("Invalid user ID, no user could be found."));
 
     }
 
     // Saves a user
-    public User saveUser(User user){
+    @Override
+    public User saveUser(UserDTO user){
         return userRepo.save(user);
     }
 
     // Updates user
+    @Override
     public User updateUser(User user, Long userId){
 
         // Checks if the user exists
@@ -57,6 +62,7 @@ public class UserService {
     }
 
     // Deletes user
+    @Override
     public void deleteUserById(Long id){
         userRepo.deleteById(id);
     }

@@ -27,6 +27,6 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package -DskipTests
+    - name: Build & Test with Maven
+      run: mvn -B verify
       working-directory: Pulselist

@@ -2,8 +2,9 @@ package services;
 
 import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.repositories.UserRepository;
-import com.example.pulselist.service.InvalidUserIDException;
-import com.example.pulselist.service.UserService;
+import com.example.pulselist.exceptions.InvalidMusicIDException;
+import com.example.pulselist.exceptions.InvalidUserIDException;
+import com.example.pulselist.service.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTests {
+class UserServiceImplTests {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Test
     void findUserById_shouldReturnUser() throws InvalidUserIDException {
@@ -32,7 +33,7 @@ class UserServiceTests {
         // Attempts to find the user added by ID
         when(userRepository.findById(2L)).thenReturn(Optional.of(user));
 
-        User result = userService.getUserById(2L);
+        User result = userServiceImpl.getUserById(2L);
 
         //Assertions
         assertNotNull(result);
@@ -45,9 +46,18 @@ class UserServiceTests {
     @Test
     void deleteUserById_deletesTheUser(){
 
-        userService.deleteUserById(2L);
+        userServiceImpl.deleteUserById(2L);
 
         verify(userRepository, times(1)).deleteById(2L);
+    }
+
+
+    @Test
+    void getUserById_invalidId_throwsInvalidUserIDException() {
+        assertThrows(
+                InvalidUserIDException.class,
+                () -> userServiceImpl.getUserById(999L)
+        );
     }
 
 }

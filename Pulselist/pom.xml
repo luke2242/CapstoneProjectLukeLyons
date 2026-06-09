@@ -84,6 +84,11 @@
             <version>4.0.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -136,6 +141,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <SPRING_DATASOURCE_URL>jdbc:h2:mem:testdb</SPRING_DATASOURCE_URL>
+                        <SPRING_DATASOURCE_USERNAME>sa</SPRING_DATASOURCE_USERNAME>
+                        <SPRING_DATASOURCE_PASSWORD></SPRING_DATASOURCE_PASSWORD>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

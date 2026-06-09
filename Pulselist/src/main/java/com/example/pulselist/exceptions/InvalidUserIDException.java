@@ -1,4 +1,4 @@
-package com.example.pulselist.service;
+package com.example.pulselist.exceptions;
 
 public class InvalidUserIDException extends Exception {
     public InvalidUserIDException(String message) {
