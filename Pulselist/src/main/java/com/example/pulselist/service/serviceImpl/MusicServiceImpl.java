@@ -1,5 +1,6 @@
 package com.example.pulselist.service.serviceImpl;
 
+import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.entities.Music;
 import com.example.pulselist.domains.repositories.MusicRepository;
 import com.example.pulselist.exceptions.InvalidMusicIDException;
@@ -35,7 +36,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
-    public Music saveMusic(Music music) {
+    public Music saveMusic(MusicDTO music) {
         return musicRepo.save(music);
     }
 
@@ -46,13 +47,26 @@ public class MusicServiceImpl implements MusicService {
         Music musicDB = musicRepo.findById(id).get();
 
         // Ensures values are populated
-        if(Objects.nonNull(music.getDiscogsId())){
-            musicDB.setDiscogsID(musicDB.getDiscogsId());
+        if (Objects.nonNull(music.getDiscogsId())) {
+            musicDB.setDiscogsID(music.getDiscogsId());
         }
 
         if(Objects.nonNull(music.getName()) && !"".equalsIgnoreCase(music.getName())){
             musicDB.setName(music.getName());
         }
+
+        if(Objects.nonNull(music.getReleaseYear())){
+            musicDB.setReleaseYear(music.getReleaseYear());
+        }
+
+        if(Objects.nonNull(music.getDiscogsThumbImg()) && !"".equalsIgnoreCase(music.getDiscogsThumbImg())){
+            musicDB.setDiscogsThumbImg(music.getDiscogsThumbImg());
+        }
+
+        if(Objects.nonNull(music.getGenre()) && !"".equalsIgnoreCase(music.getGenre())){
+            musicDB.setGenre(music.getGenre());
+        }
+
 
         return musicRepo.save(music);
 
