@@ -7,9 +7,9 @@ import com.example.pulselist.exceptions.InvalidUserIDException;
 import java.util.List;
 
 public interface UserService {
-    List<User> getUsers();
-    User getUserById(Long id) throws InvalidUserIDException;
+    List<UserDTO> getUsers();
+    UserDTO getUserById(Long id) throws InvalidUserIDException;
     User saveUser(UserDTO userDto);
-    User updateUser(User user, Long userId);
+    UserDTO updateUser(UserDTO user, Long userId);
     void deleteUserById(Long id);
 }

@@ -1,5 +1,6 @@
 package services;
 
+import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.repositories.UserRepository;
 import com.example.pulselist.exceptions.InvalidMusicIDException;
@@ -30,14 +31,15 @@ class UserServiceImplTests {
 
         User user = new User("fakeID", "JOHNSMITH67");
 
+        userRepository.save(user);
+
         // Attempts to find the user added by ID
         when(userRepository.findById(2L)).thenReturn(Optional.of(user));
 
-        User result = userServiceImpl.getUserById(2L);
+        UserDTO result = userServiceImpl.getUserById(2L);
 
         //Assertions
         assertNotNull(result);
-        assertEquals("fakeID", result.getFirebaseUid());
         assertEquals("JOHNSMITH67", result.getUsername());
 
         verify(userRepository).findById(2L);
