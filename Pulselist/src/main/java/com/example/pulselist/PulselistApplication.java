@@ -21,6 +21,7 @@ public class PulselistApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        // Test
         User newUserTest = new User("fakeID", "JohnnySmith2000");
 
         userRepository.save(newUserTest);

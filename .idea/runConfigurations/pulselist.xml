@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="pulselist" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-21" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="DB_PASSWORD" value="test12" />
+      <env name="DB_URL" value="jdbc:postgresql://localhost:3005/pulselistDB" />
+      <env name="DB_USERNAME" value="postgres" />
+    </envs>
+    <module name="Pulselist" />
+    <option name="PASS_PARENT_ENVS" value="false" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.pulselist.PulselistApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
