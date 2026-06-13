@@ -9,6 +9,7 @@ import com.example.pulselist.service.services.UserMusicListService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Objects;
 
 public class UserMusicListServiceImpl implements UserMusicListService {
 
@@ -51,6 +52,9 @@ public class UserMusicListServiceImpl implements UserMusicListService {
 
     @Override
     public void deleteMusicListById(Long id) {
+
         userMusicListRepo.deleteById(id);
+
+
     }
 }

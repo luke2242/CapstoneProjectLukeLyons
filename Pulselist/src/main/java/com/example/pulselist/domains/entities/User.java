@@ -37,7 +37,6 @@ public class User {
         return this.firebaseUid;
     }
 
-
     public void setId(Long id){
         this.id = id;
     }
