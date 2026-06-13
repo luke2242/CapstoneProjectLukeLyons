@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     List<UserDTO> getUsers();
     UserDTO getUserById(Long id) throws InvalidUserIDException;
-    User saveUser(UserDTO userDto);
+    UserDTO saveUser(UserDTO userDto);
     UserDTO updateUser(UserDTO user, Long userId);
     void deleteUserById(Long id);
 }

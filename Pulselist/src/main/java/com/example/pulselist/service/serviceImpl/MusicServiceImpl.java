@@ -4,6 +4,7 @@ import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.entities.Music;
 import com.example.pulselist.domains.repositories.MusicRepository;
 import com.example.pulselist.exceptions.InvalidMusicIDException;
+import com.example.pulselist.service.mappers.MusicMapper;
 import com.example.pulselist.service.services.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,31 +18,40 @@ public class MusicServiceImpl implements MusicService {
     @Autowired
     private final MusicRepository musicRepo;
 
-    public MusicServiceImpl(MusicRepository musicRepo){
+    @Autowired
+    private final MusicMapper musicMapper;
+
+    public MusicServiceImpl(MusicRepository musicRepo, MusicMapper musicMapper){
         this.musicRepo = musicRepo;
+        this.musicMapper = musicMapper;
     }
 
     // Returns list all of music available
     @Override
-    public List<Music> getAllMusic() {
-        return musicRepo.findAll();
+    public List<MusicDTO> getAllMusic() {
+        return musicRepo.findAll().stream().map(musicMapper::toDto).toList();
     }
 
 
     // Attempts to find music by id in database
     @Override
-    public Music getMusicById(Long id) throws InvalidMusicIDException {
-        return musicRepo.findById(id)
+    public MusicDTO getMusicById(Long id) throws InvalidMusicIDException {
+        Music music = musicRepo.findById(id)
                 .orElseThrow(() -> new InvalidMusicIDException("Invalid music ID, music could not be found."));
+
+        MusicDTO dto = musicMapper.toDto(music);
+
+        return dto;
     }
 
     @Override
-    public Music saveMusic(MusicDTO music) {
-        return musicRepo.save(music);
+    public MusicDTO saveMusic(MusicDTO music) {
+        Music entity = musicMapper.toEntity(music);
+        return musicMapper.toDto(musicRepo.save(entity));
     }
 
     @Override
-    public Music updateMusic(Music music, Long id) {
+    public MusicDTO updateMusic(MusicDTO music, Long id) {
 
         // Music entity in the db
         Music musicDB = musicRepo.findById(id).get();
@@ -67,8 +77,11 @@ public class MusicServiceImpl implements MusicService {
             musicDB.setGenre(music.getGenre());
         }
 
+        musicRepo.save(musicDB);
 
-        return musicRepo.save(music);
+        MusicDTO dto = musicMapper.toDto(musicDB);
+
+        return dto;
 
     }
 

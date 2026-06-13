@@ -3,8 +3,9 @@ package services;
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.repositories.UserRepository;
-import com.example.pulselist.exceptions.InvalidMusicIDException;
 import com.example.pulselist.exceptions.InvalidUserIDException;
+import com.example.pulselist.service.mappers.UserMapper;
+import com.example.pulselist.service.mappers.UserMapperImpl;
 import com.example.pulselist.service.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +22,35 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTests {
 
     @Mock
+    private UserMapper userMapper;
+
+    @Mock
     private UserRepository userRepository;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
+
+    @Test
+    void saveUser_shouldSaveAndReturnUserDto(){
+
+        UserDTO input = new UserDTO();
+        User mappedEntity = new User();
+        User savedEntity = new User();
+        UserDTO returned = new UserDTO();
+
+        when(userMapper.toEntity(input)).thenReturn(mappedEntity);
+        when(userRepository.save(mappedEntity)).thenReturn(savedEntity);
+        when(userMapper.toDto(savedEntity)).thenReturn(returned);
+
+        UserDTO result = userServiceImpl.saveUser(input);
+
+        assertEquals(returned, result);
+        verify(userMapper).toEntity(input);
+        verify(userRepository).save(mappedEntity);
+        verify(userMapper).toDto(savedEntity);
+
+    }
+
 
     @Test
     void findUserById_shouldReturnUser() throws InvalidUserIDException {
@@ -61,5 +87,6 @@ class UserServiceImplTests {
                 () -> userServiceImpl.getUserById(999L)
         );
     }
+
 
 }

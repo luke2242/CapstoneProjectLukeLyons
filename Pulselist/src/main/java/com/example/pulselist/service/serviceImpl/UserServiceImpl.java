@@ -15,9 +15,7 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private final UserRepository userRepo;
-
     private final UserMapper userMapper;
 
     public UserServiceImpl(UserRepository userRepo, UserMapper userMapper) {
@@ -25,11 +23,12 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    // Returns list of users
+    // Returns list of users, converts the entities to dto's
     @Override
     public List<UserDTO> getUsers(){
+        // Find all users in DB, maps them to dto's and converts them to a list
         return userRepo.findAll().stream()
-                .map(user -> new UserDTO(user.getUsername()))
+                .map(userMapper::toDto)
                 .toList();
     }
 
@@ -42,11 +41,12 @@ public class UserServiceImpl implements UserService {
         return new UserDTO(user.getUsername());
     }
 
-    // Saves a user
+    // Converts dto to entity saves it to the DB, and after the entity is brought back to a dto
+    // This is done to keep user entity secure
     @Override
-    public User saveUser(UserDTO user){
+    public UserDTO saveUser(UserDTO user){
         User entity = userMapper.toEntity(user);
-        return userRepo.save(entity);
+        return userMapper.toDto(userRepo.save(entity));
     }
 
     // Updates user

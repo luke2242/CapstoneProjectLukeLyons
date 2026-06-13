@@ -1,10 +1,10 @@
 package services;
 
+import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.entities.Music;
-import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.repositories.MusicRepository;
 import com.example.pulselist.exceptions.InvalidMusicIDException;
-import com.example.pulselist.exceptions.InvalidUserIDException;
+import com.example.pulselist.service.mappers.MusicMapper;
 import com.example.pulselist.service.serviceImpl.MusicServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +21,9 @@ import static org.mockito.Mockito.*;
 public class MusicServiceImplTests {
 
     @Mock
+    private MusicMapper musicMapper;
+
+    @Mock
     private MusicRepository musicRepository;
 
     @InjectMocks
@@ -30,11 +33,15 @@ public class MusicServiceImplTests {
     void findMusicById_shouldReturnMusic() throws InvalidMusicIDException {
 
         Music music = new Music(2L, "Stone");
+        MusicDTO dto = new MusicDTO();
+        dto.setDiscogsId(2L);
+        dto.setName("Stone");
 
-        // Attempts to find the user added by ID
+        // Attmepts to locate music
         when(musicRepository.findById(2L)).thenReturn(Optional.of(music));
+        when(musicMapper.toDto(music)).thenReturn(dto);
 
-        Music result = musicServiceImpl.getMusicById(2L);
+        MusicDTO result = musicServiceImpl.getMusicById(2L);
 
         //Assertions
         assertNotNull(result);
@@ -42,6 +49,7 @@ public class MusicServiceImplTests {
         assertEquals("Stone", result.getName());
 
         verify(musicRepository).findById(2L);
+        verify(musicMapper).toDto(music);
     }
 
     // Will check if our throw works when an invalid id is entered
@@ -60,6 +68,5 @@ public class MusicServiceImplTests {
 
         verify(musicRepository, times(1)).deleteById(2L);
     }
-
 
 }

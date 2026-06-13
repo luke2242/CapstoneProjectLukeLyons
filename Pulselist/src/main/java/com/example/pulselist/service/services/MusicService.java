@@ -7,9 +7,9 @@ import com.example.pulselist.exceptions.InvalidMusicIDException;
 import java.util.List;
 
 public interface MusicService {
-    List<Music> getAllMusic();
-    Music getMusicById(Long id) throws InvalidMusicIDException;
-    Music saveMusic(MusicDTO music);
-    Music updateMusic(Music music, Long id);
+    List<MusicDTO> getAllMusic();
+    MusicDTO getMusicById(Long id) throws InvalidMusicIDException;
+    MusicDTO saveMusic(MusicDTO music);
+    MusicDTO updateMusic(MusicDTO music, Long id);
     void deleteMusicById(Long id);
 }
