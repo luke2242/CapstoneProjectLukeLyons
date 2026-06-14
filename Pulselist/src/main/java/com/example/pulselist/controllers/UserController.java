@@ -7,6 +7,7 @@ import com.example.pulselist.service.serviceImpl.UserServiceImpl;
 import com.example.pulselist.service.services.UserService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +37,24 @@ public class UserController {
         return  ResponseEntity.ok(userDto);
     }
 
-    //
+    // Posts user to our DB
     @PostMapping("/addUser")
     public UserDTO addUser(@RequestBody UserDTO newUser){
         return userService.saveUser(newUser);
+    }
+
+    // Updates User
+    @PutMapping("/users/{id}")
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO dto){
+        UserDTO saved = userService.updateUser(dto, id);
+        return saved;
+    }
+
+    // Deletes user by id
+    @DeleteMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteByID(@PathVariable Long id){
+        userService.deleteUserById(id);
     }
 
 
