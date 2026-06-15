@@ -12,4 +12,10 @@ public class MusicDTO {
     private String discogsThumbImg;
     private String genre;
 
+    public MusicDTO(String name, int releaseYear, String genre){
+        this.name = name;
+        this.releaseYear = releaseYear;
+        this.genre = genre;
+    }
+
 }

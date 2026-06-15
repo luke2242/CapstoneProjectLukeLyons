@@ -1,4 +1,4 @@
-package services;
+package com.example.pulselist.services;
 
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;

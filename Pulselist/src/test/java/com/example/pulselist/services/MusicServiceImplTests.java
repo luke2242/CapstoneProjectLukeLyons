@@ -1,4 +1,4 @@
-package services;
+package com.example.pulselist.services;
 
 import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.entities.Music;
@@ -33,9 +33,11 @@ public class MusicServiceImplTests {
     void findMusicById_shouldReturnMusic() throws InvalidMusicIDException {
 
         Music music = new Music(2L, "Stone");
-        MusicDTO dto = new MusicDTO();
+
+        MusicDTO dto = new MusicDTO("Stone", 1999, "Rock");
+        dto.setId(2L);
         dto.setDiscogsId(2L);
-        dto.setName("Stone");
+        dto.setDiscogsThumbImg("thumb.jpg");
 
         // Attmepts to locate music
         when(musicRepository.findById(2L)).thenReturn(Optional.of(music));
@@ -45,8 +47,12 @@ public class MusicServiceImplTests {
 
         //Assertions
         assertNotNull(result);
+        assertEquals(2L, result.getId());
         assertEquals(2L, result.getDiscogsId());
         assertEquals("Stone", result.getName());
+        assertEquals(1999, result.getReleaseYear());
+        assertEquals("Rock", result.getGenre());
+        assertEquals("thumb.jpg", result.getDiscogsThumbImg());
 
         verify(musicRepository).findById(2L);
         verify(musicMapper).toDto(music);
