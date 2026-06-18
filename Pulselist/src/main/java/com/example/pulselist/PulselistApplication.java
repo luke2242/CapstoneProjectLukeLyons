@@ -11,23 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class PulselistApplication implements CommandLineRunner {
+public class PulselistApplication {
 
-    @Autowired
-    private UserRepository userRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(PulselistApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-
-        // Test
-        User newUserTest = new User("fakeID", "JohnnySmith2000");
-
-        userRepository.save(newUserTest);
-
-
-    }
 }

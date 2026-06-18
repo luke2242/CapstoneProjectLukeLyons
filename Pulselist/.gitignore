@@ -34,3 +34,5 @@ build/
 
 ## Environment Variables ##
 .env
+firebase_private_key.json
+*.key

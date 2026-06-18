@@ -12,7 +12,8 @@ public class User {
     @Id
     @GeneratedValue
     private Long id;
-
+    private String email;
+    private String password;
     private String username;
     private String firebaseUid;
 
@@ -37,6 +38,14 @@ public class User {
         return this.firebaseUid;
     }
 
+    public String getPassword(){
+        return this.password;
+    }
+
+    public String getEmail(){
+        return this.email;
+    }
+
     public void setId(Long id){
         this.id = id;
     }
@@ -47,6 +56,14 @@ public class User {
 
     public void setFirebaseUid(String firebaseUid){
         this.firebaseUid = firebaseUid;
+    }
+
+    public void setPassword(String password){
+        this.password = password;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
     }
 
 

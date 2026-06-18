@@ -4,11 +4,15 @@ import com.example.pulselist.PulselistApplication;
 import com.example.pulselist.controllers.UserController;
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;
+import com.example.pulselist.firebase.FirebaseConfigPulseList;
 import com.example.pulselist.service.services.UserService;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -29,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = PulselistApplication.class)
 @AutoConfigureMockMvc
+@ImportAutoConfiguration(exclude = {
+        FirebaseConfigPulseList.class})
 public class UserControllerTest
 {
     @Autowired
@@ -36,6 +42,12 @@ public class UserControllerTest
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private FirebaseAuth firebaseAuth;
+
+    @MockitoBean
+    private FirebaseApp firebaseApp;
 
     @Test
     public void addUser_ShouldReturnAddedUserDTO() throws Exception {

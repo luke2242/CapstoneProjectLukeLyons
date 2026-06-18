@@ -4,6 +4,7 @@ import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.entities.Music;
 import com.example.pulselist.domains.repositories.MusicRepository;
 import com.example.pulselist.exceptions.InvalidMusicIDException;
+import com.example.pulselist.firebase.FirebaseConfigPulseList;
 import com.example.pulselist.service.mappers.MusicMapper;
 import com.example.pulselist.service.serviceImpl.MusicServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.util.Optional;
 

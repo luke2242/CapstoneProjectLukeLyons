@@ -1,5 +1,6 @@
 package com.example.pulselist.controllers;
 
+import com.example.pulselist.domains.dto.CreateUserDTO;
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.exceptions.InvalidUserIDException;
@@ -40,7 +41,7 @@ public class UserController {
 
     // Posts user to our DB
     @PostMapping("/addUser")
-    public UserDTO addUser(@RequestBody UserDTO newUser){
+    public UserDTO addUser(@RequestBody CreateUserDTO newUser){
         return userService.saveUser(newUser);
     }
 

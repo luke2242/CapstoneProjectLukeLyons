@@ -4,11 +4,15 @@ import com.example.pulselist.PulselistApplication;
 import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.Music;
+import com.example.pulselist.firebase.FirebaseConfigPulseList;
 import com.example.pulselist.service.services.MusicService;
 import com.example.pulselist.service.services.UserService;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -25,10 +29,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = PulselistApplication.class)
 @AutoConfigureMockMvc
+@ImportAutoConfiguration(exclude = {
+        FirebaseConfigPulseList.class})
 public class MusicControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private FirebaseAuth firebaseAuth;
+
+    @MockitoBean
+    private FirebaseApp firebaseApp;
+
 
     @MockitoBean
     private MusicService musicService;
