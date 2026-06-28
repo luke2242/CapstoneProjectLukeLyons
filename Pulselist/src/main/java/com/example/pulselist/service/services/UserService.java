@@ -13,5 +13,4 @@ public interface UserService {
     UserDTO saveUser(CreateUserDTO createUserDTO);
     UserDTO updateUser(UserDTO user, Long userId);
     void deleteUserById(Long id);
-    String createFirebaseUser(String email, String password);
 }

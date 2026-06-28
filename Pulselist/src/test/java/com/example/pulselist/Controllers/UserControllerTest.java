@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,10 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@SpringBootTest(classes = PulselistApplication.class)
-@AutoConfigureMockMvc
-@ImportAutoConfiguration(exclude = {
-        FirebaseConfigPulseList.class})
+@WebMvcTest(UserController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest
 {
     @Autowired
@@ -89,6 +88,7 @@ public class UserControllerTest
     }
 
     @Test
+    @WithMockUser
     public void getUsers_ShouldReturnAllUsers() throws Exception {
 
         UserDTO mockUserOne = new UserDTO("johnnyt");

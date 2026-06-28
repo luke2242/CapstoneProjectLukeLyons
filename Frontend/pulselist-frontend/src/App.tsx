@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
+import LoginForm from './pages/LoginForm';
 
 function App() {
 
@@ -12,7 +12,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Home />}></Route>
+              <Route path="/" element={<LoginForm />}></Route>
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>

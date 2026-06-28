@@ -6,9 +6,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "firebase.project-id=test",
+        "FIREBASE_PROJECT_ID=test"
+})
+@ActiveProfiles("test")
 class PulselistApplicationTests {
 
         @MockitoBean

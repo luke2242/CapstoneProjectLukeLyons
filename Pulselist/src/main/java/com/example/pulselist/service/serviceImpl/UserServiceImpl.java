@@ -55,17 +55,14 @@ public class UserServiceImpl implements UserService {
     // This is done to keep user entity secure
     @Override
     public UserDTO saveUser(CreateUserDTO createUserDTO){
-        // Calls the firebaseUserMethod and creates the email and password
-        String firebaseUid = createFirebaseUser(createUserDTO.getEmail(), createUserDTO.getPassword());
-
-        // Converts it to entity
         User entity = new User();
-        entity.setEmail(createUserDTO.getEmail());
         entity.setUsername(createUserDTO.getUsername());
-        entity.setFirebaseUid(firebaseUid);
+        entity.setEmail(createUserDTO.getEmail());
+        entity.setFirebaseUid(createUserDTO.getUid());
 
-        User save = userRepo.save(entity);
-        return userMapper.toDto(save);
+        User saved = userRepo.save(entity);
+
+        return userMapper.toDto(saved);
     }
 
     // Updates user
@@ -91,31 +88,6 @@ public class UserServiceImpl implements UserService {
         userRepo.deleteById(id);
     }
 
-    @Override
-    public String createFirebaseUser(String email, String password) {
-        CreateRequest req = new CreateRequest();
-
-        // Sets the parameters
-        req.setEmail(email);
-        req.setPassword(password);
-        req.setEmailVerified(true);
-
-        // Attempts to create new firebase account
-        try{
-            UserRecord userRecord = firebaseAuth.createUser(req);
-            // Returns the firebase uid that we can use for our user
-            return userRecord.getUid();
-        } catch (FirebaseAuthException exception){
-
-            // If the account already exists we throw an exception indicating so
-            if(exception.getMessage().contains("DUPLICATE_ACCOUNT_ERRORR")){
-
-                throw new AccountAlreadyExistsException("This user is already registered.");
-            }
-
-            throw new RuntimeException("Firebase error: " + exception.getMessage());
-        }
-    }
 
 
 }

@@ -1,6 +1,8 @@
 package com.example.pulselist.Controllers;
 
 import com.example.pulselist.PulselistApplication;
+import com.example.pulselist.controllers.MusicController;
+import com.example.pulselist.controllers.UserController;
 import com.example.pulselist.domains.dto.MusicDTO;
 import com.example.pulselist.domains.dto.UserDTO;
 import com.example.pulselist.domains.entities.Music;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,10 +30,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = PulselistApplication.class)
-@AutoConfigureMockMvc
-@ImportAutoConfiguration(exclude = {
-        FirebaseConfigPulseList.class})
+@WebMvcTest(MusicController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class MusicControllerTest {
 
     @Autowired

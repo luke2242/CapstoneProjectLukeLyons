@@ -50,16 +50,6 @@ class UserServiceImplTests {
         createDto.setUsername("newuser1");
         createDto.setPassword("nopassword");
 
-        // Gets a mock user record class to user from firebase auth
-        UserRecord userRecord = mock(UserRecord.class);
-
-        // Attempts to get a Uid and returns it to us
-        when(userRecord.getUid()).thenReturn("fakeuid");
-
-        // Calls a create user request from firebase auth, and returns a user record
-        when(firebaseAuth.createUser(any(UserRecord.CreateRequest.class)))
-                .thenReturn(userRecord);
-
         // New user entity with the same param's as the createUserDTO
         User savedUser = new User();
         savedUser.setFirebaseUid("fakeuid");
@@ -84,8 +74,8 @@ class UserServiceImplTests {
         assertEquals("newuser1", result.getUsername());
 
         // And verify
-        verify(firebaseAuth).createUser(any(UserRecord.CreateRequest.class));
         verify(userRepository).save(any(User.class));
+        verifyNoInteractions(firebaseAuth);
 
     }
 

@@ -11,3 +11,16 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwt-set-uri:
+          issuer-uri:
+
+  firebase:
+    project-id: ${FIREBASE_PROJECT_ID}
+
+server:
+  port: 8081
