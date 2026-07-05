@@ -1,5 +1,6 @@
 package com.example.pulselist.config;
 
+import com.example.pulselist.firebase.FirebaseTokenFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,6 +29,12 @@ public class SecurityConfig {
 
     @Value("${FIREBASE_PROJECT_ID}")
     private String firebaseProjectID;
+
+    private final FirebaseTokenFilter firebaseTokenFilter;
+
+    public SecurityConfig(FirebaseTokenFilter firebaseTokenFilter) {
+        this.firebaseTokenFilter = firebaseTokenFilter;
+    }
 
 
     // Handles our user's registration
@@ -54,7 +62,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
