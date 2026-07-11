@@ -41,6 +41,10 @@ jobs:
         working-directory: Frontend/pulselist-frontend
         run: npm ci
 
+      - name: Run React Tests
+        working-directory: Frontend/pulselist-frontend
+        run: npm test
+      
       - name: Build frontend
         working-directory: Frontend/pulselist-frontend
         run: npm run build
