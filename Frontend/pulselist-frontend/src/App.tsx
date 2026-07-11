@@ -6,6 +6,7 @@ import SignUpForm from './pages/SignUpForm';
 import AccountPage from './pages/AccountPage';
 import Landing from './pages/Landing';
 import Navbar from './components/Navbar';
+import ProtectedRoutes from './ProtectedRoutes';
 
 function App() {
 
@@ -13,17 +14,22 @@ function App() {
 
   return (
     <>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-          <Navbar/>
-            <Routes>
-              <Route path='/' element={<Landing/>}></Route>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Navbar />
+
+          <Routes>
+            <Route element={<ProtectedRoutes />}>
               <Route path="/accountPage" element={<AccountPage />}></Route>
-              <Route path="/login" element={<LoginForm />}></Route>
-              <Route path="/signup" element={<SignUpForm />}></Route>
-            </Routes>
-          </BrowserRouter>
-        </QueryClientProvider>
+            </Route>
+
+            <Route path='/' element={<Landing />}></Route>
+            <Route path="/login" element={<LoginForm />}></Route>
+            <Route path="/signup" element={<SignUpForm />}></Route>
+            
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
     </>
   )
 }
