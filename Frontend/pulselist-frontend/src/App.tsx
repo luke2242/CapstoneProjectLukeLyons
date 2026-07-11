@@ -7,6 +7,8 @@ import AccountPage from './pages/AccountPage';
 import Landing from './pages/Landing';
 import Navbar from './components/Navbar';
 import ProtectedRoutes from './ProtectedRoutes';
+import TrendingPage from './pages/TrendingPage';
+import Home from "./pages/Home";
 
 function App() {
 
@@ -21,9 +23,11 @@ function App() {
           <Routes>
             <Route element={<ProtectedRoutes />}>
               <Route path="/accountPage" element={<AccountPage />}></Route>
+              <Route path='/trending' element={<TrendingPage />}></Route>
             </Route>
 
             <Route path='/' element={<Landing />}></Route>
+            <Route path='/home' element={<Home/>}></Route>
             <Route path="/login" element={<LoginForm />}></Route>
             <Route path="/signup" element={<SignUpForm />}></Route>
             

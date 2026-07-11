@@ -23,8 +23,8 @@ const handleLogout = async () => {
                     </IconButton>
                     <Typography variant="h6" component='div' sx={{ flexGrow: 1 }}>PULSELIST</Typography>
                     <Stack direction='row' spacing={2}>
-                        <Button><Link to='/' className="navLink"><HomeIcon /></Link></Button>
-                        <Button><Link to='/music' className="navLink"> Music </Link></Button>
+                        <Button><Link to='/home' className="navLink"><HomeIcon /></Link></Button>
+                        <Button><Link to='/trending' className="navLink"> Trending </Link></Button>
                         <Button><Link to='/accountPage' className="navLink"> Your Music List </Link></Button>
                         <Button><Link to='/login' className="navLink"> Login </Link></Button>
                         <Button onClick={() => handleLogout()}>Logout</Button>

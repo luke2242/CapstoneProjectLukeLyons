@@ -24,3 +24,9 @@ spring:
 
 server:
   port: 8081
+
+discogs:
+  api:
+    base-url: https://api.discogs.com
+    token: ${DISCOGS_TOKEN}
+    user-agent: ${DISCOGS_USER_AGENT}

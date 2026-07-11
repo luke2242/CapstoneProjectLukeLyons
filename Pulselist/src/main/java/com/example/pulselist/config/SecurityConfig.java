@@ -58,7 +58,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfig()))
                 .authorizeHttpRequests(auth -> auth
+                        // Will prevent our endpoints from being blocked in the front-end
                         .requestMatchers("/api/addUser").permitAll()
+                        .requestMatchers("/api/discogs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
@@ -69,7 +71,8 @@ public class SecurityConfig {
     }
 
     // Prevents front-end from being blocked by CORS
-    private CorsConfigurationSource corsConfig() {
+    @Bean
+    public CorsConfigurationSource corsConfig() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));

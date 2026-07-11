@@ -1,11 +1,12 @@
-function Home(){
+function Home() {
 
-    return(
+    return (
         <>
-        <h1>PulseList</h1>
-        <div className="music-discovery">
+            <h1>PulseList</h1>
+            <div className="music-discovery">
 
-        </div>
+                <p>Welcome Home!</p>
+            </div>
         </>
     );
 }
