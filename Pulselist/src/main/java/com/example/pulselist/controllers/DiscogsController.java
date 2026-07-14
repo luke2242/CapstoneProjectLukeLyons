@@ -1,6 +1,7 @@
 package com.example.pulselist.controllers;
 
 import com.example.pulselist.domains.dto.DiscogsDTO;
+import com.example.pulselist.domains.dto.DiscogsSearchDTO;
 import com.example.pulselist.service.services.DiscogsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class DiscogsController {
     }
 
     @GetMapping("/search")
-    public List<DiscogsDTO> searchCatalog(
+    public List<DiscogsSearchDTO> searchCatalog(
             @RequestParam String q,
             @RequestParam(defaultValue = "release") String type) {
 
@@ -28,7 +29,7 @@ public class DiscogsController {
     @GetMapping("/trending")
     public List<DiscogsDTO> trendingReleases(
             @RequestParam(defaultValue = "year") String sortBy,
-            @RequestParam(defaultValue = "10") int count) {
+            @RequestParam(defaultValue = "504") int count) {
 
         return discogsService.trendingReleases(sortBy, count);
     }

@@ -9,6 +9,7 @@ import Navbar from './components/Navbar';
 import ProtectedRoutes from './ProtectedRoutes';
 import TrendingPage from './pages/TrendingPage';
 import Home from "./pages/Home";
+import SearchPage from './pages/SearchPage';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
             <Route element={<ProtectedRoutes />}>
               <Route path="/accountPage" element={<AccountPage />}></Route>
               <Route path='/trending' element={<TrendingPage />}></Route>
+              <Route path='/search' element={<SearchPage/>}></Route>
             </Route>
 
             <Route path='/' element={<Landing />}></Route>

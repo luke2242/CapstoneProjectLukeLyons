@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { AppBar, Button, IconButton, Stack, Toolbar, Typography } from "@mui/material"
 import AlbumIcon from '@mui/icons-material/Album';
 import HomeIcon from '@mui/icons-material/Home';
+import SearchIcon from '@mui/icons-material/Search';32
 import "../App.css";
 import { useAuth } from "../config/authConfig";
 
@@ -22,6 +23,7 @@ const handleLogout = async () => {
                         <AlbumIcon />
                     </IconButton>
                     <Typography variant="h6" component='div' sx={{ flexGrow: 1 }}>PULSELIST</Typography>
+                    <Button className="searchButton"><Link to='/search' className="navLink"><SearchIcon /></Link></Button>
                     <Stack direction='row' spacing={2}>
                         <Button><Link to='/home' className="navLink"><HomeIcon /></Link></Button>
                         <Button><Link to='/trending' className="navLink"> Trending </Link></Button>

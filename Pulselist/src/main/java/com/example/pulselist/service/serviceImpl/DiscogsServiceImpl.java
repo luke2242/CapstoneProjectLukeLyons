@@ -2,6 +2,7 @@ package com.example.pulselist.service.serviceImpl;
 
 import com.example.pulselist.domains.dto.DiscogsDTO;
 import com.example.pulselist.domains.dto.DiscogsReleaseDTO;
+import com.example.pulselist.domains.dto.DiscogsSearchDTO;
 import com.example.pulselist.domains.dto.DiscogsSearchResultsDTO;
 import com.example.pulselist.service.services.DiscogsService;
 import org.springframework.stereotype.Service;
@@ -21,19 +22,18 @@ public class DiscogsServiceImpl implements DiscogsService {
         this.discogsRestTemplate = discogsRestTemplate;
     }
 
-
-    // Constructs an endpoint for searching in discogs
     @Override
-    public List<DiscogsDTO> searchCatalog(String q, String type) {
+    public List<DiscogsSearchDTO> searchCatalog(String q, String type) {
 
         String url = UriComponentsBuilder.fromPath("/database/search")
                 .queryParam("q", q)
                 .queryParam("type", type)
                 .toUriString();
 
-        DiscogsSearchResultsDTO dto = discogsRestTemplate.getForObject(url, DiscogsSearchResultsDTO.class);
+        DiscogsSearchResultsDTO dto =
+                discogsRestTemplate.getForObject(url, DiscogsSearchResultsDTO.class);
 
-        return dto != null ?  dto.results() : List.of();
+        return dto != null ? dto.results() : List.of();
     }
 
     // Constructs endpoint to retrieve releases from discogs
