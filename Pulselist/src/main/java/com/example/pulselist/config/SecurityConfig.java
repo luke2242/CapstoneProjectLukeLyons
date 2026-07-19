@@ -5,12 +5,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -58,13 +62,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfig()))
                 .authorizeHttpRequests(auth -> auth
-                        // Will prevent our endpoints from being blocked in the front-end
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/addUser").permitAll()
                         .requestMatchers("/api/discogs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
-                .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -89,16 +91,21 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
 
-        String jwkSetUri = "https://googleapis.com";
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        String jwkSetUri =
+                "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 
-        org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<org.springframework.security.oauth2.jwt.Jwt> validator =
-                new org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<>(
-                        new org.springframework.security.oauth2.jwt.JwtTimestampValidator(),
-                        new org.springframework.security.oauth2.jwt.JwtIssuerValidator("https://google.com" + firebaseProjectID)
-                );
+        NimbusJwtDecoder jwtDecoder =
+                NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
 
-        jwtDecoder.setJwtValidator(validator);
+        jwtDecoder.setJwtValidator(
+                new DelegatingOAuth2TokenValidator<>(
+                        new JwtTimestampValidator(),
+                        new JwtIssuerValidator(
+                                "https://securetoken.google.com/" + firebaseProjectID
+                        )
+                )
+        );
+
         return jwtDecoder;
     }
 }

@@ -4,14 +4,17 @@ import com.example.pulselist.domains.enums.ListeningStatus;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_music_list")
+@Table(
+        name = "user_music_list",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "music_id"})
+)
 public class UserMusicList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

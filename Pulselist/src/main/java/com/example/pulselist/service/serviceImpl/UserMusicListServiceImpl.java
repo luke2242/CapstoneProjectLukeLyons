@@ -1,24 +1,31 @@
 package com.example.pulselist.service.serviceImpl;
 
+import com.example.pulselist.domains.dto.AddToMusicListRequest;
 import com.example.pulselist.domains.dto.UserMusicListDTO;
 import com.example.pulselist.domains.entities.UserMusicList;
+import com.example.pulselist.domains.entities.UserMusicListEntry;
+import com.example.pulselist.domains.enums.ListeningStatus;
+import com.example.pulselist.domains.repositories.UserMusicListEntryRepository;
 import com.example.pulselist.domains.repositories.UserMusicListRepository;
 import com.example.pulselist.exceptions.InvalidUserMusicListIDException;
 import com.example.pulselist.service.mappers.UserMusicListMapper;
 import com.example.pulselist.service.services.UserMusicListService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
+@Service
 public class UserMusicListServiceImpl implements UserMusicListService {
 
     private final UserMusicListRepository userMusicListRepo;
     private final UserMusicListMapper userMusicListMapper;
+    private final UserMusicListEntryRepository userMusicListEntryRepository;
 
-    public UserMusicListServiceImpl(UserMusicListRepository userMusicListRepo, UserMusicListMapper userMusicListMapper){
+    public UserMusicListServiceImpl(UserMusicListRepository userMusicListRepo, UserMusicListMapper userMusicListMapper, UserMusicListEntryRepository userMusicListEntryRepository){
         this.userMusicListRepo = userMusicListRepo;
         this.userMusicListMapper = userMusicListMapper;
+        this.userMusicListEntryRepository = userMusicListEntryRepository;
     }
 
     @Override
@@ -56,5 +63,38 @@ public class UserMusicListServiceImpl implements UserMusicListService {
         userMusicListRepo.deleteById(id);
 
 
+    }
+
+    @Override
+    @Transactional
+    public UserMusicListEntry addOrUpdate(Long userId, AddToMusicListRequest request) {
+        return userMusicListEntryRepository.findByUserIdAndDiscogsReleaseId(userId, request.discogsReleaseId())
+                .map(entry -> {
+                    entry.setDiscogsTitle(request.discogsTitle());
+                    entry.setDiscogsArtist(request.discogsArtist());
+                    entry.setDiscogsCoverUrl(request.discogsCoverUrl());
+                    entry.setStatus(request.status());
+                    return userMusicListEntryRepository.save(entry);
+                })
+                .orElseGet(() -> {
+                    UserMusicListEntry entry = new UserMusicListEntry();
+                    entry.setUserId(userId);
+                    entry.setDiscogsReleaseId(request.discogsReleaseId());
+                    entry.setDiscogsTitle(request.discogsTitle());
+                    entry.setDiscogsArtist(request.discogsArtist());
+                    entry.setDiscogsCoverUrl(request.discogsCoverUrl());
+                    entry.setStatus(request.status());
+                    return userMusicListEntryRepository.save(entry);
+                });
+    }
+
+    @Override
+    @Transactional
+    public UserMusicListEntry updateStatus(Long entryId, ListeningStatus status){
+
+        UserMusicListEntry entry = userMusicListEntryRepository.findById(entryId)
+                .orElseThrow(() -> new RuntimeException("Entry not found"));
+        entry.setStatus(status);
+        return userMusicListEntryRepository.save(entry);
     }
 }

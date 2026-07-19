@@ -1,5 +1,6 @@
 import type { DiscogsDTO } from "../types/discogs";
 import { useTrendingReleases } from "../hooks/useTrendingReleases";
+import {addToList} from "../api/listManagementApi";
 
 export default function TrendingPage() {
 
@@ -33,6 +34,7 @@ export default function TrendingPage() {
                     )}
 
                     <p>{album.title}</p>
+                    <button onClick={() => addToList(album)}>Add</button>
                 </div>
             ))}
         </div>
