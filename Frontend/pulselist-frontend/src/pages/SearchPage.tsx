@@ -82,14 +82,7 @@ export default function SearchPage() {
                 />
               ) : (
                 <div
-                  style={{
-                    width: 200,
-                    height: 200,
-                    backgroundColor: "#ddd",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="no-image-available"
                 >
                   No image
                 </div>
@@ -98,6 +91,7 @@ export default function SearchPage() {
               <h3>{release.title}</h3>
               <p>Year: {release.year}</p>
               <p>Country: {release.country || "Unknown"}</p>
+              
             </div>
           ))}
         </div>

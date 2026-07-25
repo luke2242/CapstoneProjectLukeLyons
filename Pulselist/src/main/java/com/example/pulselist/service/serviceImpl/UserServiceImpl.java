@@ -89,5 +89,20 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    // Finds or creates a user in firebase
+    @Override
+    public UserDTO findOrCreateUser(String uid, String email, String name) {
+
+        User user = userRepo.findByFirebaseUid(uid)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setFirebaseUid(uid);
+                    newUser.setEmail(email);
+                    newUser.setUsername(name);
+                    return userRepo.save(newUser);
+                });
+
+        return userMapper.toDto(user);
+    }
 
 }

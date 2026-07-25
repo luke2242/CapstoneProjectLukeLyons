@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { getAuth, signInWithEmailAndPassword, signOut, onIdTokenChanged, type User } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, type User } from "firebase/auth";
 import { app } from "../firebaseConfig";
 
 const auth = getAuth(app);
@@ -45,13 +45,27 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export const authConfig = {
+  loginPath: '/login',
+  signupPath: '/signup',
+  afterSignInPath: '/account',
+  afterSignUpPath: '/account',
+} as const;
+
+export const getSafeAuthRedirect = (path?: string) => {
+  if (!path || path === 'undefined' || path === 'null') {
+    return authConfig.afterSignUpPath;
+  }
+  return path;
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
 
       if (firebaseUser) {
@@ -65,8 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setLoading(false);
     });
-
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const login = async (email: string, password: string) => {

@@ -1,4 +1,5 @@
 import type { DiscogsDTO, DiscogsSearchResultDTO } from "../types/discogs";
+import { authFetch } from "./authApi";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api/discogs`;
 
@@ -7,7 +8,7 @@ export async function getTrending(
   count = 50
 ): Promise<DiscogsDTO[]> {
 
-  const response = await fetch(
+  const response = await authFetch(
     `${API_URL}/trending?sortBy=${sortBy}&count=${count}`
   );
 
@@ -26,7 +27,9 @@ export async function getSearchResults(
   perPage = 10,
   signal?: AbortSignal
 ): Promise<DiscogsSearchResultDTO[]> {
-  const response = await fetch(
+
+
+  const response = await authFetch(
     `${API_URL}/search?q=${encodeURIComponent(query)}&type=${type}&page=${page}&perPage=${perPage}`,
     { signal }
   );

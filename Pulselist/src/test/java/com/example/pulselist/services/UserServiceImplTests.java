@@ -7,7 +7,6 @@ import com.example.pulselist.domains.repositories.UserRepository;
 import com.example.pulselist.exceptions.InvalidUserIDException;
 import com.example.pulselist.firebase.FirebaseConfigPulseList;
 import com.example.pulselist.service.mappers.UserMapper;
-import com.example.pulselist.service.mappers.UserMapperImpl;
 import com.example.pulselist.service.serviceImpl.UserServiceImpl;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;

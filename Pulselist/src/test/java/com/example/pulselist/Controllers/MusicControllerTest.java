@@ -1,21 +1,14 @@
 package com.example.pulselist.Controllers;
 
-import com.example.pulselist.PulselistApplication;
 import com.example.pulselist.controllers.MusicController;
-import com.example.pulselist.controllers.UserController;
 import com.example.pulselist.domains.dto.MusicDTO;
-import com.example.pulselist.domains.dto.UserDTO;
-import com.example.pulselist.domains.entities.Music;
-import com.example.pulselist.firebase.FirebaseConfigPulseList;
+import com.example.pulselist.service.services.FirebaseAuthService;
 import com.example.pulselist.service.services.MusicService;
-import com.example.pulselist.service.services.UserService;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -43,6 +36,8 @@ public class MusicControllerTest {
     @MockitoBean
     private FirebaseApp firebaseApp;
 
+    @MockitoBean
+    private FirebaseAuthService firebaseAuthService;
 
     @MockitoBean
     private MusicService musicService;
@@ -56,11 +51,9 @@ public class MusicControllerTest {
         mockMusic.setDiscogsId(1L);
         mockMusic.setDiscogsThumbImg("thumb.jpg");
 
-        // We save a copy of the data to be posted, and will check if it's returned correctly
         Mockito.when(musicService.saveMusic(Mockito.any()))
                 .thenReturn(mockMusic);
 
-        // Attempts to post the data to our mock API endpoint
         mockMvc.perform(post("/api/music/addMusic")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
@@ -123,11 +116,9 @@ public class MusicControllerTest {
         mockMusic.setDiscogsId(1L);
         mockMusic.setDiscogsThumbImg("thumb.jpg");
 
-        // Gets a copy of our musicDTO, to compare to the API endpoint
         Mockito.when(musicService.getMusicById(1L))
                 .thenReturn(mockMusic);
 
-        // Attempts to get music from the API
         mockMvc.perform(get("/api/music/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("computer_world"))

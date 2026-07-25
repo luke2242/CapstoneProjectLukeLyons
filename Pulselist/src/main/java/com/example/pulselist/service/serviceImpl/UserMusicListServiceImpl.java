@@ -2,11 +2,13 @@ package com.example.pulselist.service.serviceImpl;
 
 import com.example.pulselist.domains.dto.AddToMusicListRequest;
 import com.example.pulselist.domains.dto.UserMusicListDTO;
+import com.example.pulselist.domains.entities.User;
 import com.example.pulselist.domains.entities.UserMusicList;
 import com.example.pulselist.domains.entities.UserMusicListEntry;
 import com.example.pulselist.domains.enums.ListeningStatus;
 import com.example.pulselist.domains.repositories.UserMusicListEntryRepository;
 import com.example.pulselist.domains.repositories.UserMusicListRepository;
+import com.example.pulselist.domains.repositories.UserRepository;
 import com.example.pulselist.exceptions.InvalidUserMusicListIDException;
 import com.example.pulselist.service.mappers.UserMusicListMapper;
 import com.example.pulselist.service.services.UserMusicListService;
@@ -21,11 +23,18 @@ public class UserMusicListServiceImpl implements UserMusicListService {
     private final UserMusicListRepository userMusicListRepo;
     private final UserMusicListMapper userMusicListMapper;
     private final UserMusicListEntryRepository userMusicListEntryRepository;
+    private final UserRepository userRepository;
 
-    public UserMusicListServiceImpl(UserMusicListRepository userMusicListRepo, UserMusicListMapper userMusicListMapper, UserMusicListEntryRepository userMusicListEntryRepository){
+    public UserMusicListServiceImpl(
+            UserMusicListRepository userMusicListRepo,
+            UserMusicListMapper userMusicListMapper,
+            UserMusicListEntryRepository userMusicListEntryRepository,
+            UserRepository userRepository
+    ) {
         this.userMusicListRepo = userMusicListRepo;
         this.userMusicListMapper = userMusicListMapper;
         this.userMusicListEntryRepository = userMusicListEntryRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -35,34 +44,8 @@ public class UserMusicListServiceImpl implements UserMusicListService {
     }
 
     @Override
-    public List<UserMusicListDTO> getAllMusicLists() {
-        return userMusicListRepo.findAll().stream().map(userMusicListMapper::toDto).toList();
-    }
-
-    @Override
-    public UserMusicListDTO getUserMusicListById(Long id) throws InvalidUserMusicListIDException {
-        UserMusicList userMusicList = userMusicListRepo.findById(id)
-                .orElseThrow(() -> new InvalidUserMusicListIDException("Invalid user music list id, no user could be found"));
-
-        UserMusicListDTO dto = userMusicListMapper.toDto(userMusicList);
-
-        return dto;
-    }
-
-    @Override
-    public UserMusicListDTO updateMusicList(Long id, UserMusicListDTO userMusicListDto) {
-
-        UserMusicList userMusicListDB = userMusicListRepo.findById(id).get();
-
-        return null;
-    }
-
-    @Override
     public void deleteMusicListById(Long id) {
-
         userMusicListRepo.deleteById(id);
-
-
     }
 
     @Override
@@ -90,11 +73,30 @@ public class UserMusicListServiceImpl implements UserMusicListService {
 
     @Override
     @Transactional
-    public UserMusicListEntry updateStatus(Long entryId, ListeningStatus status){
+    public UserMusicListEntry addOrUpdateByFirebaseUid(
+            String firebaseUid,
+            AddToMusicListRequest request
+    ) {
+        User user = userRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        return addOrUpdate(user.getId(), request);
+    }
+
+    @Override
+    @Transactional
+    public UserMusicListEntry updateStatus(Long entryId, ListeningStatus status) {
         UserMusicListEntry entry = userMusicListEntryRepository.findById(entryId)
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
         entry.setStatus(status);
         return userMusicListEntryRepository.save(entry);
+    }
+
+    @Override
+    public List<UserMusicListEntry> getMusicListByFirebaseUid(String firebaseUid) {
+        User user = userRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return userMusicListEntryRepository.findAllByUserIdOrderByIdDesc(user.getId());
     }
 }

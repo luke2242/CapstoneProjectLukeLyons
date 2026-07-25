@@ -23,7 +23,8 @@ function App() {
 
           <Routes>
             <Route element={<ProtectedRoutes />}>
-              <Route path="/accountPage" element={<AccountPage />}></Route>
+              <Route path="/account" element={<AccountPage />}></Route>
+<Route path="/accountPage" element={<AccountPage />}></Route>
               <Route path='/trending' element={<TrendingPage />}></Route>
               <Route path='/search' element={<SearchPage/>}></Route>
             </Route>

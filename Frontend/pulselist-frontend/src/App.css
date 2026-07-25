@@ -15,6 +15,15 @@ body {
     text-decoration: none;
 }
 
-.welcome_class{
+.welcome_class {
     text-align: center;
+}
+
+.no-image-available {
+    width: 200;
+    height: 200;
+    background-color: "#ddd";
+    display: "flex";
+    align-items: "center";
+    justify-content: "center";
 }

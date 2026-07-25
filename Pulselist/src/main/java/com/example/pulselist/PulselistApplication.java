@@ -1,11 +1,5 @@
 package com.example.pulselist;
 
-import com.example.pulselist.*;
-import com.example.pulselist.domains.dto.UserDTO;
-import com.example.pulselist.domains.entities.User;
-import com.example.pulselist.domains.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
