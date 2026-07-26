@@ -1,101 +1,175 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import {   useInfiniteQuery, type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Alert, Box, Button, Card, CardContent, CardMedia, Grid, MenuItem, Paper, Select, Stack, TextField, Typography,} from "@mui/material";
 import { useSearchDebounce } from "../hooks/useSearchDebounce";
 import { getSearchResults } from "../api/discogsApi";
+import { addToList } from "../api/listManagementApi";
 import type { DiscogsSearchResultDTO } from "../types/discogs";
+import { LISTENING_STATUSES, LISTENING_STATUS_LABELS, type ListeningStatus} from "../types/listStatus";
+import PageLayout from "../components/PageLayout";
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  // Intended for pages later (50 results per page)
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
+  const [selectedStatuses, setSelectedStatuses] = useState<Record<number, ListeningStatus>>({});
+  const queryClient = useQueryClient();
 
-  // Every 500 millisceonds the search will be updated, rather than updating every keystroke
   const debouncedSearchTerm = useSearchDebounce(searchTerm, 500);
 
-  // Use 
-  const {
-    data = [],
+  const addToListMutation = useMutation({
+    mutationFn: addToList,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-music-list"] });
+    },
+  });
+
+  const getStatusForRelease = (releaseId: number): ListeningStatus => {
+    return selectedStatuses[releaseId] ?? "WANT_TO_LISTEN";
+  };
+
+const {
+    data,
     isLoading,
     isError,
     error,
-  } = useQuery<DiscogsSearchResultDTO[]>({
-    queryKey: ["discogs-search", debouncedSearchTerm, page],
-    queryFn: ({ signal }) =>
-      // Inputs for get search result
-      getSearchResults(
-        debouncedSearchTerm,
-        "release",
-        page,
-        10,
-        signal
-      ),
-    // Trims the debounced search term and will only run this call if the search term has a length greater than 1
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<
+    DiscogsSearchResultDTO[],
+    Error,
+    InfiniteData<DiscogsSearchResultDTO[]>,
+    [string, string],
+    number
+  >({
+    queryKey: ["discogs-search", debouncedSearchTerm],
+    queryFn: ({ pageParam = 1, signal }) =>
+      getSearchResults(debouncedSearchTerm, "release", pageParam, 50, signal),
     enabled: debouncedSearchTerm.trim().length > 0,
-    // Ensures if the user searches the same search term again that it's cached for at least 1 minute
-    // This avoids unneccesary API calls
-    staleTime: 60 * 1000
+    staleTime: 60 * 1000,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === 50 ? allPages.length + 1 : undefined,
   });
 
-  // In our return, we have a default placeholder if no images can be found for the discogs item
-  // We also methods in place for loading, errors and if there's no search results found
+  const searchResults = data?.pages.flat() ?? [];
+
+
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Search releases..."
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setPage(1);
-        }}
-      />
+    <PageLayout
+      showNavbar
+      title="Search"
+      subtitle="Find releases and save them to your personal PulseList."
+    >
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <TextField
+          fullWidth
+          placeholder="Search releases..."
+          label="Search releases"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+        />
+      </Paper>
 
-      {!searchTerm.trim() && (
-        <p>Start typing to search for releases.</p>
-      )}
+      {!searchTerm.trim() ? <Typography>Start typing to search for releases.</Typography> : null}
+      {isLoading ? <Typography>Loading releases...</Typography> : null}
 
-      {isLoading && <p>Loading releases...</p>}
+      {isError ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to load releases. {error.message}
+        </Alert>
+      ) : null}
 
-      {isError && (
-        <p>
-          Failed to load releases.
-          {error.message}
-        </p>
-      )}
+      {!isLoading && !isError && searchTerm.trim() && searchResults.length === 0 ? (
+        <Typography>No releases found.</Typography>
+      ) : null}
 
-      {!isLoading &&
-        !isError &&
-        searchTerm.trim() &&
-        data.length === 0 && (
-          <p>No releases found.</p>
-        )}
+      {!isLoading && !isError && searchResults.length > 0 ? (
+        <Grid container spacing={2}>
+          {searchResults.map((release) => {
+            const imageUrl = release.cover_image || release.thumb;
 
-      {!isLoading && !isError && data.length > 0 && (
-        <div>
-          {data.map((release) => (
-            <div key={release.id}>
-              {release.cover_image ? (
-                <img
-                  src={release.cover_image}
-                  alt={release.title}
-                  width={200}
-                />
-              ) : (
-                <div
-                  className="no-image-available"
-                >
-                  No image
-                </div>
-              )}
+            return (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={release.id}>
+                <Card sx={{ height: "100%" }}>
+                  {imageUrl ? (
+                    <CardMedia component="img" height="240" image={imageUrl} alt={release.title} />
+                  ) : (
+                    <Box
+                      sx={{
+                        height: 240,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "text.secondary",
+                      }}
+                    >
+                      No image
+                    </Box>
+                  )}
 
-              <h3>{release.title}</h3>
-              <p>Year: {release.year}</p>
-              <p>Country: {release.country || "Unknown"}</p>
-              
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+                  <CardContent>
+                    <Stack spacing={1.5}>
+                      <Typography variant="h6">{release.title}</Typography>
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                        Year: {release.year || "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                        Country: {release.country || "Unknown"}
+                      </Typography>
+
+                      <Stack direction="row" spacing={1.2} sx={{ alignItems: "center" }}>
+                        <Typography variant="body2">Status</Typography>
+                        <Select
+                          size="small"
+                          value={getStatusForRelease(release.id)}
+                          onChange={(e) => {
+                            setSelectedStatuses((prev) => ({
+                              ...prev,
+                              [release.id]: e.target.value as ListeningStatus,
+                            }));
+                          }}
+                        >
+                          {LISTENING_STATUSES.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {LISTENING_STATUS_LABELS[status]}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Stack>
+
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          addToListMutation.mutate({
+                            discogsReleaseId: release.id,
+                            discogsTitle: release.title,
+                            discogsArtist: release.title.split(" - ")[0] || "Unknown artist",
+                            discogsCoverUrl: imageUrl || undefined,
+                            status: getStatusForRelease(release.id),
+                          });
+                        }}
+                      >
+                        Add to list
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      ) : null}
+
+      {!isLoading && !isError && hasNextPage ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+          <Button variant="outlined" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+            {isFetchingNextPage ? "Loading more..." : "Load more"}
+          </Button>
+        </Box>
+      ) : null}
+    </PageLayout>
   );
 }

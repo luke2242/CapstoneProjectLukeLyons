@@ -3,6 +3,7 @@ import type { ListeningStatus } from "../types/listStatus";
 
 export type FirebaseSignInRes = unknown;
 
+// Mirrors our backend user music list entry
 export type UserMusicListEntry = {
   id: number;
   userId: number;

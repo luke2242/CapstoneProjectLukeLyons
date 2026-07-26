@@ -15,3 +15,5 @@ export const LISTENING_STATUS_LABELS: Record<ListeningStatus, string> = {
   LISTENED: "Listened",
   DROPPED: "Dropped",
 };
+
+export type DiscogsSearchType = 'release' | 'master' | 'artist';

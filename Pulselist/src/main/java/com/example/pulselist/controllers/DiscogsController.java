@@ -21,7 +21,9 @@ public class DiscogsController {
     @GetMapping("/search")
     public List<DiscogsSearchDTO> searchCatalog(
             @RequestParam String q,
-            @RequestParam(defaultValue = "release") String type) {
+            @RequestParam(defaultValue = "release") String type,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "50") int perPage){
 
         return discogsService.searchCatalog(q, type);
     }
@@ -29,7 +31,7 @@ public class DiscogsController {
     @GetMapping("/trending")
     public List<DiscogsDTO> trendingReleases(
             @RequestParam(defaultValue = "year") String sortBy,
-            @RequestParam(defaultValue = "504") int count) {
+            @RequestParam(defaultValue = "50") int count) {
 
         return discogsService.trendingReleases(sortBy, count);
     }

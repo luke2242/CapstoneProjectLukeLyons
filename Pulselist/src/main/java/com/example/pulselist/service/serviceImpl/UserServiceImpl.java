@@ -8,12 +8,7 @@ import com.example.pulselist.exceptions.AccountAlreadyExistsException;
 import com.example.pulselist.exceptions.InvalidUserIDException;
 import com.example.pulselist.service.mappers.UserMapper;
 import com.example.pulselist.service.services.UserService;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.firebase.auth.UserRecord.CreateRequest;
 
 
 import java.util.List;
@@ -24,13 +19,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepo;
     private final UserMapper userMapper;
-    private final FirebaseAuth firebaseAuth;
 
 
-    public UserServiceImpl(UserRepository userRepo, UserMapper userMapper, FirebaseAuth firebaseAuth) {
+    public UserServiceImpl(UserRepository userRepo, UserMapper userMapper) {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
-        this.firebaseAuth = firebaseAuth;
     }
 
     // Returns list of users, converts the entities to dto's

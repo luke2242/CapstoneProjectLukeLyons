@@ -4,7 +4,7 @@ import { authFetch } from "./authApi";
 const API_URL = `${import.meta.env.VITE_API_URL}/api/discogs`;
 
 export async function getTrending(
-  sortBy = "year",
+  sortBy = "month",
   count = 50
 ): Promise<DiscogsDTO[]> {
 
@@ -19,12 +19,12 @@ export async function getTrending(
   return response.json();
 }
 
-// Returns 10 search results per page for our search query
+// Returns 50 search results per page for our search query
 export async function getSearchResults(
   query: string,
-  type: "release",
+  type: 'release' | 'master' | 'artist',
   page = 1,
-  perPage = 10,
+  perPage = 50,
   signal?: AbortSignal
 ): Promise<DiscogsSearchResultDTO[]> {
 

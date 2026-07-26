@@ -40,7 +40,8 @@ public class UserMusicListServiceImpl implements UserMusicListService {
     @Override
     public UserMusicListDTO save(UserMusicListDTO userMusicListDto) {
         UserMusicList entity = userMusicListMapper.toEntity(userMusicListDto);
-        return userMusicListMapper.toDto(entity);
+        UserMusicList savedEntity = userMusicListRepo.save(entity);
+        return userMusicListMapper.toDto(savedEntity);
     }
 
     @Override

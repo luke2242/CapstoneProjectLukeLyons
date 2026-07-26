@@ -1,5 +1,16 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Alert,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+} from "@mui/material";
 import type { DiscogsDTO } from "../types/discogs";
 import { useTrendingReleases } from "../hooks/useTrendingReleases";
 import { addToList } from "../api/listManagementApi";
@@ -8,11 +19,10 @@ import {
   LISTENING_STATUS_LABELS,
   type ListeningStatus,
 } from "../types/listStatus";
+import PageLayout from "../components/PageLayout";
 
 export default function TrendingPage() {
-  const [selectedStatuses, setSelectedStatuses] = useState<
-    Record<number, ListeningStatus>
-  >({});
+  const [selectedStatuses, setSelectedStatuses] = useState<Record<number, ListeningStatus>>({});
   const queryClient = useQueryClient();
 
   const {
@@ -32,72 +42,79 @@ export default function TrendingPage() {
     return selectedStatuses[albumId] ?? "WANT_TO_LISTEN";
   };
 
-  if (isLoading) {
-    return <p>Loading releases...</p>;
-  }
-
-  if (error) {
-    return <p>Failed to load releases</p>;
-  }
-
   return (
-    <div>
-      {addToListMutation.isError && (
-        <p>
-          Failed to add release to list.
-          {addToListMutation.error instanceof Error
-            ? addToListMutation.error.message
-            : "Unknown error"}
-        </p>
-      )}
+    <PageLayout
+      showNavbar
+      title="Trending"
+      subtitle="Discover what's trending and save releases to your personal PulseList."
+    >
+      {isLoading ? <Typography>Loading releases...</Typography> : null}
 
-      {albums.map((album: DiscogsDTO) => {
-        const selectedStatus = getStatusForAlbum(album.id);
-        const isAddingThisAlbum =
-          addToListMutation.isPending &&
-          addToListMutation.variables?.discogsReleaseId === album.id;
+      {error ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to load releases.
+        </Alert>
+      ) : null}
 
-        return (
-          <div key={album.id}>
-            {album.image && <img src={album.image} alt={album.title} width={200} />}
+      {!isLoading && !error && albums.length === 0 ? (
+        <Typography>No trending releases found.</Typography>
+      ) : null}
 
-            <p>{album.title}</p>
+      {!isLoading && !error && albums.length > 0 ? (
+        <Grid container spacing={2}>
+          {albums.map((album: DiscogsDTO) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={album.id}>
+              <Card sx={{ height: "100%" }}>
+                <CardContent>
+                  <Stack spacing={1.5}>
+                    <Typography variant="h6">{album.title}</Typography>
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      Year: {album.year || "Unknown"}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      Country: {album.country || "Unknown"}
+                    </Typography>
 
-            <label htmlFor={`trending-status-${album.id}`}>Status</label>
-            <select
-              id={`trending-status-${album.id}`}
-              value={selectedStatus}
-              onChange={(e) => {
-                setSelectedStatuses((prev) => ({
-                  ...prev,
-                  [album.id]: e.target.value as ListeningStatus,
-                }));
-              }}
-            >
-              {LISTENING_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {LISTENING_STATUS_LABELS[status]}
-                </option>
-              ))}
-            </select>
+                    <Stack direction="row" spacing={1.2} sx={{ alignItems: "center" }}>
+                      <Typography variant="body2">Status</Typography>
+                      <Select
+                        size="small"
+                        value={getStatusForAlbum(album.id)}
+                        onChange={(e) => {
+                          setSelectedStatuses((prev) => ({
+                            ...prev,
+                            [album.id]: e.target.value as ListeningStatus,
+                          }));
+                        }}
+                      >
+                        {LISTENING_STATUSES.map((status) => (
+                          <MenuItem key={status} value={status}>
+                            {LISTENING_STATUS_LABELS[status]}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Stack>
 
-            <button
-              onClick={() => {
-                addToListMutation.mutate({
-                  discogsReleaseId: album.id,
-                  discogsTitle: album.title,
-                  discogsArtist: album.title.split(" - ")[0] || "Unknown artist",
-                  discogsCoverUrl: album.image || undefined,
-                  status: selectedStatus,
-                });
-              }}
-              disabled={isAddingThisAlbum}
-            >
-              {isAddingThisAlbum ? "Adding..." : "Add to list"}
-            </button>
-          </div>
-        );
-      })}
-    </div>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        addToListMutation.mutate({
+                          discogsReleaseId: album.id,
+                          discogsTitle: album.title,
+                          discogsArtist: album.title.split(" - ")[0] || "Unknown artist",
+                          status: getStatusForAlbum(album.id),
+                        });
+                      }}
+                    >
+                      Add to list
+                    </Button>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ) : null}
+    </PageLayout>
   );
 }

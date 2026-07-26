@@ -1,17 +1,10 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  changeStatus,
-  fetchMyMusicList,
-  removeFromList,
-  type UserMusicListEntry,
-} from "../api/listManagementApi";
+import { Alert, Avatar, Box, Button, Chip, Grid, MenuItem, Paper, Select, Stack, Typography } from "@mui/material";
+import { changeStatus, fetchMyMusicList, removeFromList, type UserMusicListEntry } from "../api/listManagementApi";
 import { useAuth } from "../config/authConfig";
-import {
-  LISTENING_STATUSES,
-  LISTENING_STATUS_LABELS,
-  type ListeningStatus,
-} from "../types/listStatus";
+import { LISTENING_STATUSES, LISTENING_STATUS_LABELS, type ListeningStatus } from "../types/listStatus";
+import PageLayout from "../components/PageLayout";
 
 type StatusFilter = "ALL" | ListeningStatus;
 
@@ -70,103 +63,96 @@ export default function AccountPage() {
   }, [myMusicList, statusFilter]);
 
   const isChangingStatusForEntry = (entry: UserMusicListEntry): boolean => {
-    return (
-      changeStatusMutation.isPending &&
-      changeStatusMutation.variables?.entryId === entry.id
-    );
+    return changeStatusMutation.isPending && changeStatusMutation.variables?.entryId === entry.id;
   };
 
   const isRemovingEntry = (entry: UserMusicListEntry): boolean => {
-    return (
-      removeEntryMutation.isPending && removeEntryMutation.variables === entry.id
-    );
+    return removeEntryMutation.isPending && removeEntryMutation.variables === entry.id;
   };
 
   return (
-    <div>
-      <h1>Welcome {user?.displayName || user?.email || "User"}!</h1>
-      <h2>Your music list</h2>
-
-      <div>
-        <strong>Status totals:</strong>
-        <ul>
-          {LISTENING_STATUSES.map((status) => (
-            <li key={status}>
-              {statusCounts[status]} songs in {LISTENING_STATUS_LABELS[status]}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <label htmlFor="account-status-filter">Filter by status: </label>
-      <select
-        id="account-status-filter"
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-      >
-        <option value="ALL">All statuses</option>
+    <PageLayout
+      showNavbar
+      title={`Welcome ${user?.displayName || user?.email || "User"}`}
+      subtitle="Your personal music list, status tracking, and quick management tools."
+    >
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         {LISTENING_STATUSES.map((status) => (
-          <option key={status} value={status}>
-            {LISTENING_STATUS_LABELS[status]}
-          </option>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={status}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                {LISTENING_STATUS_LABELS[status]}
+              </Typography>
+              <Typography variant="h4">{statusCounts[status]}</Typography>
+            </Paper>
+          </Grid>
         ))}
-      </select>
+      </Grid>
 
-      {isLoading && <p>Loading your music list...</p>}
-      {isError && (
-        <p>
-          Failed to load music list: {error instanceof Error ? error.message : "Unknown error"}
-        </p>
-      )}
-
-      {changeStatusMutation.isError && (
-        <p>
-          Failed to update status.
-          {changeStatusMutation.error instanceof Error
-            ? changeStatusMutation.error.message
-            : "Unknown error"}
-        </p>
-      )}
-
-      {removeEntryMutation.isError && (
-        <p>
-          Failed to remove entry.
-          {removeEntryMutation.error instanceof Error
-            ? removeEntryMutation.error.message
-            : "Unknown error"}
-        </p>
-      )}
-
-      {!isLoading && !isError && myMusicList.length === 0 && <p>Your list is empty.</p>}
-
-      {!isLoading && !isError && myMusicList.length > 0 && filteredEntries.length === 0 && (
-        <p>No songs found for this status.</p>
-      )}
-
-      <ul>
-        {filteredEntries.map((entry) => (
-          <li
+      <Paper sx={{ p: 2.5, mb: 3 }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: "center" }}>
+          <Typography>Filter by status</Typography>
+          <Select
+            size="small"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
           >
-            {entry.discogsCoverUrl ? (
-              <img
-                src={entry.discogsCoverUrl}
+            <MenuItem value="ALL">All statuses</MenuItem>
+            {LISTENING_STATUSES.map((status) => (
+              <MenuItem key={status} value={status}>
+                {LISTENING_STATUS_LABELS[status]}
+              </MenuItem>
+            ))}
+          </Select>
+          <Box sx={{ flexGrow: 1 }} />
+          <Chip label={`${filteredEntries.length} shown`} color="primary" />
+        </Stack>
+      </Paper>
+
+      {isLoading ? <Typography>Loading your music list...</Typography> : null}
+
+      {isError ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to load music list: {error instanceof Error ? error.message : "Unknown error"}
+        </Alert>
+      ) : null}
+
+      {changeStatusMutation.isError ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to update status. {changeStatusMutation.error instanceof Error ? changeStatusMutation.error.message : "Unknown error"}
+        </Alert>
+      ) : null}
+
+      {removeEntryMutation.isError ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Failed to remove entry. {removeEntryMutation.error instanceof Error ? removeEntryMutation.error.message : "Unknown error"}
+        </Alert>
+      ) : null}
+
+      {!isLoading && !isError && myMusicList.length === 0 ? <Typography>Your list is empty.</Typography> : null}
+
+      {!isLoading && !isError && myMusicList.length > 0 && filteredEntries.length === 0 ? (
+        <Typography>No songs found for this status.</Typography>
+      ) : null}
+
+      <Stack spacing={1.5}>
+        {filteredEntries.map((entry) => (
+          <Paper key={entry.id} sx={{ p: 2 }}>
+            <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: { md: "center" } }}>
+              <Avatar
+                variant="rounded"
+                src={entry.discogsCoverUrl || undefined}
                 alt={`${entry.discogsTitle} cover`}
-                style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6 }}
+                sx={{ width: 64, height: 64, bgcolor: "rgba(250,235,215,0.1)" }}
               />
-            ) : (
-              <div
-              />
-            )}
 
-            <div>
-              <div>{entry.discogsTitle}</div>
-              <div>{entry.discogsArtist}</div>
-            </div>
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="h6">{entry.discogsTitle}</Typography>
+                <Typography sx={{ color: "text.secondary" }}>{entry.discogsArtist}</Typography>
+              </Box>
 
-            <div>
-              <label htmlFor={`entry-status-${entry.id}`}>Status</label>
-              <select
-                id={`entry-status-${entry.id}`}
+              <Select
+                size="small"
                 value={entry.status}
                 onChange={(e) => {
                   changeStatusMutation.mutate({
@@ -177,24 +163,26 @@ export default function AccountPage() {
                 disabled={isChangingStatusForEntry(entry)}
               >
                 {LISTENING_STATUSES.map((status) => (
-                  <option key={status} value={status}>
+                  <MenuItem key={status} value={status}>
                     {LISTENING_STATUS_LABELS[status]}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </div>
+              </Select>
 
-            <button
-              onClick={() => {
-                removeEntryMutation.mutate(entry.id);
-              }}
-              disabled={isRemovingEntry(entry)}
-            >
-              {isRemovingEntry(entry) ? "Removing..." : "Remove"}
-            </button>
-          </li>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  removeEntryMutation.mutate(entry.id);
+                }}
+                disabled={isRemovingEntry(entry)}
+              >
+                {isRemovingEntry(entry) ? "Removing..." : "Remove"}
+              </Button>
+            </Stack>
+          </Paper>
         ))}
-      </ul>
-    </div>
+      </Stack>
+    </PageLayout>
   );
 }
