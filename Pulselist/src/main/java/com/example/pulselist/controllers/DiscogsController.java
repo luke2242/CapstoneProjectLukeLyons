@@ -25,7 +25,7 @@ public class DiscogsController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "50") int perPage){
 
-        return discogsService.searchCatalog(q, type);
+        return discogsService.searchCatalog(q, type, page, perPage);
     }
 
     @GetMapping("/trending")
