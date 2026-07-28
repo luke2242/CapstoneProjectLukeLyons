@@ -10,7 +10,6 @@ import PageLayout from "../components/PageLayout";
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [page] = useState(1);
   const [selectedStatuses, setSelectedStatuses] = useState<Record<number, ListeningStatus>>({});
   const queryClient = useQueryClient();
 
